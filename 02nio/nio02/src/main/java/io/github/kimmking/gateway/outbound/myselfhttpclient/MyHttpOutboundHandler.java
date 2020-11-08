@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.hibernate.validator.internal.util.stereotypes.ThreadSafe;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -34,7 +35,6 @@ public class MyHttpOutboundHandler {
         client = HttpClients.createDefault();
         proxyService = ThreadPool.getThreadPoolExecutor();
     }
-
     public void handler(FullHttpRequest fullRequest, ChannelHandlerContext ctx) {
         final String url = this.backendUrl + fullRequest.uri();
         if (StringUtils.isEmpty(url)) {
@@ -48,13 +48,13 @@ public class MyHttpOutboundHandler {
                 .setConnectionRequestTimeout(1000) // 连接请求超时时间
                 .setSocketTimeout(1000) // 套接字超时时间
                 .build();
-        // HttpHeaders httpHeaders =   fullRequest.headers();
-        // List<Map.Entry<String, String>> headerList =  httpHeaders.entries();
+        HttpHeaders httpHeaders = fullRequest.headers();
+        List<Map.Entry<String, String>> headerList = httpHeaders.entries();
         // 设置全部请求头到对后端调用的请求头中
-        // headerList.forEach(header -> {
-        //     Map.Entry<String, String> map = header;
-        //     httpGet.addHeader(map.getKey(), map.getValue());
-        // });
+        headerList.forEach(header -> {
+            Map.Entry<String, String> map = header;
+            httpGet.addHeader(map.getKey(), map.getValue());
+        });
         httpGet.setConfig(config);
         proxyService.submit(() -> doGet(httpGet, fullRequest, ctx));
     }
