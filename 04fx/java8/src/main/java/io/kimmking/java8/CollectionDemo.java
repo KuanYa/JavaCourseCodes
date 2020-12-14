@@ -11,10 +11,15 @@ public class CollectionDemo {
     
         List<Integer> list = Arrays.asList(4,2,3,5,1,2,2,7,6);   // Arrays还可以包装stream
         print(list);
+        //  正序
         Collections.sort(list);
         print(list);
+
+        // 倒序
         Collections.reverse(list);
         print(list);
+
+        // 随机排序
         Collections.shuffle(list);
         print(list);
     
@@ -24,7 +29,7 @@ public class CollectionDemo {
         Collections.fill(list,8);
         print(list);
         
-        list = Collections.singletonList(6);
+        list = Collections.singletonList(9);
         print(list);
         
     }
