@@ -42,12 +42,12 @@ public class RpcfxServerApplication {
 
 	// 能否去掉name
 	//
-	@Bean(name = "io.kimmking.rpcfx.demo.api.UserService")
+	@Bean()
 	public UserService createUserService(){
 		return new UserServiceImpl();
 	}
 
-	@Bean(name = "io.kimmking.rpcfx.demo.api.OrderService")
+	@Bean()
 	public OrderService createOrderService(){
 		return new OrderServiceImpl();
 	}

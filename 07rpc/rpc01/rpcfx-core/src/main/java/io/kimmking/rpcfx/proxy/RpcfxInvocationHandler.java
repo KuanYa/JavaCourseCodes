@@ -1,5 +1,4 @@
-package io.kimmking.rpcfx.client;
-
+package io.kimmking.rpcfx.proxy;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.ParserConfig;
@@ -9,26 +8,13 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import org.aopalliance.intercept.MethodInterceptor;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
-public final class Rpcfx {
-
-    static {
-        ParserConfig.getGlobalInstance().addAccept("io.kimmking");
-    }
-
-    public static <T> T create(final Class<T> serviceClass, final String url) {
-
-        // 0. 替换动态代理 -> AOP
-        return (T) Proxy.newProxyInstance(Rpcfx.class.getClassLoader(), new Class[]{serviceClass}, new RpcfxInvocationHandler(serviceClass, url));
-
-    }
-
-    public static class RpcfxInvocationHandler implements InvocationHandler {
+public  class RpcfxInvocationHandler implements InvocationHandler {
 
         public static final MediaType JSONTYPE = MediaType.get("application/json; charset=utf-8");
 
@@ -37,6 +23,7 @@ public final class Rpcfx {
         public <T> RpcfxInvocationHandler(Class<T> serviceClass, String url) {
             this.serviceClass = serviceClass;
             this.url = url;
+            ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
         }
 
         // 可以尝试，自己去写对象序列化，二进制还是文本的，，，rpcfx是xml自定义序列化、反序列化，json: code.google.com/p/rpcfx
@@ -45,20 +32,25 @@ public final class Rpcfx {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
-            RpcfxRequest request = new RpcfxRequest();
-            request.setServiceClass(this.serviceClass.getName());
-            request.setMethod(method.getName());
-            request.setParams(params);
-
-            RpcfxResponse response = post(request, url);
-
-            // 这里判断response.status，处理异常
-            // 考虑封装一个全局的RpcfxException
-
-            return JSON.parse(response.getResult().toString());
+            return invokePost(method, params);
         }
 
-        private RpcfxResponse post(RpcfxRequest req, String url) throws IOException {
+    private Object invokePost(Method method, Object[] params) throws IOException {
+        RpcfxRequest request = new RpcfxRequest();
+        request.setServiceClass(this.serviceClass.getName());
+        request.setMethod(method.getName());
+        request.setParams(params);
+        request.setParameterTypes(method.getParameterTypes());
+
+        RpcfxResponse response = post(request, url);
+
+        // 这里判断response.status，处理异常
+        // 考虑封装一个全局的RpcfxException
+
+        return JSON.parse(response.getResult().toString());
+    }
+
+    private RpcfxResponse post(RpcfxRequest req, String url) throws IOException {
             String reqJson = JSON.toJSONString(req);
             System.out.println("req json: "+reqJson);
 
@@ -74,4 +66,3 @@ public final class Rpcfx {
             return JSON.parseObject(respJson, RpcfxResponse.class);
         }
     }
-}

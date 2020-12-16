@@ -14,25 +14,31 @@ public class RpcfxInvoker {
 
     private RpcfxResolver resolver;
 
-    public RpcfxInvoker(RpcfxResolver resolver){
+
+    public RpcfxInvoker(RpcfxResolver resolver) {
         this.resolver = resolver;
     }
 
-    public RpcfxResponse invoke(RpcfxRequest request) {
+    public RpcfxResponse invoke(RpcfxRequest request){
         RpcfxResponse response = new RpcfxResponse();
         String serviceClass = request.getServiceClass();
-
-        // 作业1：改成泛型和反射
-        Object service = resolver.resolve(serviceClass);//this.applicationContext.getBean(serviceClass);
-
+        Object[] params = request.getParams();
+        // 获取参数类型
         try {
-            Method method = resolveMethodFromClass(service.getClass(), request.getMethod());
-            Object result = method.invoke(service, request.getParams()); // dubbo, fastjson,
+            // 作业1：改成泛型和反射
+            // 先反射获取Class
+            Class<?> aClass = Class.forName(serviceClass);
+            // 通过 class 获取注入的bean，就可以实现去掉 @Bean(name = "XXX")中的name
+            Object service =  resolver.resolve(aClass);//this.applicationContext.getBean(serviceClass);
+
+            Method method = aClass.getMethod(request.getMethod(),request.getParameterTypes());
+            // Method method = resolveMethodFromClass(service.getClass(), request.getMethod());
+            Object result = method.invoke(service, params); // dubbo, fastjson,
             // 两次json序列化能否合并成一个
             response.setResult(JSON.toJSONString(result, SerializerFeature.WriteClassName));
             response.setStatus(true);
             return response;
-        } catch ( IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException | ClassNotFoundException | NoSuchMethodException  e) {
 
             // 3.Xstream
 
@@ -45,6 +51,13 @@ public class RpcfxInvoker {
         }
     }
 
+    /**
+     * 此处使用反射替换
+     *
+     * @param klass
+     * @param methodName
+     * @return
+     */
     private Method resolveMethodFromClass(Class<?> klass, String methodName) {
         return Arrays.stream(klass.getMethods()).filter(m -> methodName.equals(m.getName())).findFirst().get();
     }

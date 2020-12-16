@@ -2,6 +2,7 @@ package io.kimmking.rpcfx.demo.provider;
 
 import io.kimmking.rpcfx.demo.api.User;
 import io.kimmking.rpcfx.demo.api.UserService;
+import org.springframework.core.annotation.Order;
 
 public class UserServiceImpl implements UserService {
 

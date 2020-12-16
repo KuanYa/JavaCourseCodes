@@ -8,6 +8,8 @@ public class Order {
 
     private float amount;
 
+    public Order(){}
+
     public Order(int id, String name, float amount) {
         this.id = id;
         this.name = name;

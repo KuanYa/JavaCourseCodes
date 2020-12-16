@@ -8,6 +8,8 @@ public class RpcfxRequest {
 
   private Object[] params;
 
+  private Class<?>[] parameterTypes;
+
     public String getServiceClass() {
         return serviceClass;
     }
@@ -30,5 +32,13 @@ public class RpcfxRequest {
 
     public void setParams(Object[] params) {
         this.params = params;
+    }
+
+    public Class<?>[] getParameterTypes() {
+        return parameterTypes;
+    }
+
+    public void setParameterTypes(Class<?>[] parameterTypes) {
+        this.parameterTypes = parameterTypes;
     }
 }
