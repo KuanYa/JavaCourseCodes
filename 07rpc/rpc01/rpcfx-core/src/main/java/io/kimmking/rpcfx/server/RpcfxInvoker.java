@@ -42,7 +42,7 @@ public class RpcfxInvoker {
 
             // 3.Xstream
 
-            // 2.封装一个统一的RpcfxException
+            // 2.封装一个统一的 RpcfxException
             // 客户端也需要判断异常
             e.printStackTrace();
             response.setException(e);

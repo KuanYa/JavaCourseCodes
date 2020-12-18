@@ -20,14 +20,12 @@ public class RpcfxClientApplication {
 	//
 	public static void main(String[] args) {
 
-		// UserService service = new xxx();
-		// service.findById
 		RpcfxProxy rpcfxProxy = new RpcfxByteBuddy();
-		UserService userService = rpcfxProxy.create(UserService.class, "http://localhost:8080/");
+		UserService userService = rpcfxProxy.create(UserService.class, "http://localhost:8082/");
 		User user = userService.findById(1);
 		System.out.println("find user id=1 from server: " + user.getName());
 
-		OrderService orderService = rpcfxProxy.create(OrderService.class, "http://localhost:8080/");
+		OrderService orderService = rpcfxProxy.create(OrderService.class, "http://localhost:8082/");
 		Order order = orderService.findOrderById(1992129);
 		System.out.println(String.format("find order name=%s, amount=%f",order.getName(),order.getAmount()));
 

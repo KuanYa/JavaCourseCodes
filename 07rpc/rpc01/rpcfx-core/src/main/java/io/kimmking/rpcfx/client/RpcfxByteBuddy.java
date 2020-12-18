@@ -1,6 +1,5 @@
 package io.kimmking.rpcfx.client;
 
-import com.alibaba.fastjson.parser.ParserConfig;
 import io.kimmking.rpcfx.proxy.RpcfxInvocationHandler;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.implementation.InvocationHandlerAdapter;
