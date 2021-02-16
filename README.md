@@ -1,2 +1,2 @@
 # JavaCourse
-JavaCourse baifukuan
+JavaCourse
